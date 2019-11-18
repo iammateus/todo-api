@@ -1,0 +1,16 @@
+# Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
+fos_rest:
+    view:
+        view_response_listener:  true
+    exception:
+        exception_controller: 'fos_rest.exception.controller:showAction'
+    format_listener:
+        rules:
+            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }
+            - { path: ^/, priorities: ['html', '*/*'], fallback_format: html, prefer_extension: true }
+    body_converter:
+        enabled: true
+        validate: true
+        validation_errors_argument: validationErrors
+    body_listener:
+        enabled: true
