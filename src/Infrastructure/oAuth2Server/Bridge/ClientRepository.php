@@ -4,6 +4,8 @@ namespace App\Infrastructure\oAuth2Server\Bridge;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
+use Symfony\Component\Security\Core\Encoder\SodiumPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use App\Repository\ClientRepositoryInterface as AppClientRepositoryInterface;
 
 final class ClientRepository implements ClientRepositoryInterface
@@ -42,12 +44,12 @@ final class ClientRepository implements ClientRepositoryInterface
 		return $oauthClient;
 	}
 
-	//@TODO: Create SHA256 encoding logic in client secret
 	public function validateClient($clientIdentifier, $clientSecret, $grantType)
 	{
 		$appClient = $this->appClientRepository->findActive($clientIdentifier);
+		$passwordEncoder = new SodiumPasswordEncoder();
 
-		if (!hash_equals($appClient->getSecret(), (string) $clientSecret)) {
+		if (!$passwordEncoder->isPasswordValid($appClient->getSecret(), $clientSecret, null)) {
 			return false;
 		}
 
