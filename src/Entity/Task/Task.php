@@ -20,6 +20,7 @@ class Task implements ArrayExpressibleEntityInterface
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="tasks")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
 	 */
 	private $user;
 

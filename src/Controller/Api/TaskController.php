@@ -9,6 +9,7 @@ use App\Repository\TaskRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\TokenAuthenticatedController;
+use App\Repository\UserRepository;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -73,26 +74,28 @@ class TaskController extends FOSRestController implements TokenAuthenticatedCont
 	 * Creates a task.
 	 * @Rest\Post("/tasks")
 	 * @ParamConverter("taskDTO", converter="fos_rest.request_body")
+	 * @param Request $request
 	 * @param TaskDTO $taskDTO
 	 * @param ConstraintViolationListInterface $validationErrors
 	 * @param TaskService $taskService
 	 * @return View
 	 */
-	public function create(TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService): View
+	public function create(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService, UserRepository $userRepository): View
 	{
-
 		if (count($validationErrors)) {
 			return View::create($validationErrors, Response::HTTP_BAD_REQUEST);
 		}
 
-		$storeTaskReturn = $taskService->store($taskDTO);
+		$user_id = $request->get('oauth_user_id');
+		$taskDTO->user = $userRepository->find($user_id);
+		$return = $taskService->store($taskDTO);
 
 		return View::create(
 			[
-				"data" => $storeTaskReturn ? ["message" => "Task created successfully"] : [],
-				"errors" => $storeTaskReturn ? [] : ["message" => "Error while creating task"]
+				"data" => $return ? ["message" => "Task created successfully"] : [],
+				"errors" => $return ? [] : ["message" => "Error while creating task"]
 			],
-			$storeTaskReturn ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
+			$return ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
 		);
 	}
 

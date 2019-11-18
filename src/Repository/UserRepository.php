@@ -33,7 +33,7 @@ final class UserRepository implements UserRepositoryInterface
 	 */
 	public function find(int $id): ?User
 	{
-		$this->entityManager->find(self::ENTITY, $id);
+		return $this->entityManager->find(self::ENTITY, $id);
 	}
 
 	/**

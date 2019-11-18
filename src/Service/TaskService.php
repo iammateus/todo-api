@@ -11,53 +11,53 @@ use App\Repository\TaskRepository;
 final class TaskService
 {
 	/**
-     * @var TaskRepository
-     */
+	 * @var TaskRepository
+	 */
 	private $taskRepository;
 
 	/**
-     * @var LoggerInterface
-     */
+	 * @var LoggerInterface
+	 */
 	private $logger;
-	
+
 	/**
-     * @param TaskRepository $taskRepository
-     * @param LoggerInterface $logger
-     * @return void
-     */
+	 * @param TaskRepository $taskRepository
+	 * @param LoggerInterface $logger
+	 * @return void
+	 */
 	public function __construct(TaskRepository $taskRepository, LoggerInterface $logger)
 	{
 		$this->taskRepository = $taskRepository;
 		$this->logger = $logger;
 	}
-	
+
 	/**
-     * @param TaskDTO $taskDTO
-     * @return bool
-     */
+	 * @param TaskDTO $taskDTO
+	 * @return bool
+	 */
 	public function store(TaskDTO $taskDTO): bool
 	{
 		$task = new Task();
 
 		$task->setTitle($taskDTO->title);
+		$task->setUser($taskDTO->user);
 		$task->setDescription($taskDTO->description);
 		$task->setCreatedAt(new DateTime());
 
-		try{
+		try {
 			$this->taskRepository->store($task);
-
 			return true;
-		}catch(\Exception $e){
+		} catch (\Exception $e) {
 			$this->logger->error($e);
 			return false;
 		}
 	}
 
 	/**
-     * @param int $id
-     * @param TaskDTO $taskDTO
-     * @return bool
-     */
+	 * @param int $id
+	 * @param TaskDTO $taskDTO
+	 * @return bool
+	 */
 	public function update($id, TaskDTO $taskDTO): bool
 	{
 		$task = $this->taskRepository->find($id);
@@ -66,38 +66,37 @@ final class TaskService
 		$task->setDescription($taskDTO->description);
 		$task->setUpdatedAt(new DateTime());
 
-		try{
+		try {
 			$this->taskRepository->update($task);
 
 			return true;
-		}catch(\Exception $e){
+		} catch (\Exception $e) {
 			$this->logger->error($e);
 			return false;
 		}
 	}
-	
+
 	/**
-     * @param int $id
-     * @param TaskDTO $taskDTO
-     * @return bool
-     */
+	 * @param int $id
+	 * @param TaskDTO $taskDTO
+	 * @return bool
+	 */
 	public function delete($id): bool
 	{
-		
+
 		$task = $this->taskRepository->find($id);
 
-		if(empty($task)){
+		if (empty($task)) {
 			return false;
 		}
 
-		try{
+		try {
 			$this->taskRepository->delete($task);
 
 			return true;
-		}catch(\Exception $e){
+		} catch (\Exception $e) {
 			$this->logger->error($e);
 			return false;
 		}
 	}
-
 }
