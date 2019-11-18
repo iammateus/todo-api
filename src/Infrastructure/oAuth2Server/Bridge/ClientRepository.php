@@ -5,7 +5,6 @@ namespace App\Infrastructure\oAuth2Server\Bridge;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use Symfony\Component\Security\Core\Encoder\SodiumPasswordEncoder;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use App\Repository\ClientRepositoryInterface as AppClientRepositoryInterface;
 
 final class ClientRepository implements ClientRepositoryInterface
