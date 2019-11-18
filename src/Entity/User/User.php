@@ -45,6 +45,11 @@ class User implements UserInterface, ArrayExpressibleEntityInterface
 	private $active;
 
 	/**
+	 * @ORM\OneToMany(targetEntity="App\Entity\Task\Task", mappedBy="user")
+	 */
+	private $tasks;
+
+	/**
 	 * User contructor.
 	 * @param string $email
 	 * @param string $name
