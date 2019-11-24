@@ -9,7 +9,6 @@ use App\Repository\TaskRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\TokenAuthenticatedController;
-use App\Repository\UserRepository;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -80,23 +79,13 @@ class TaskController extends FOSRestController implements TokenAuthenticatedCont
 	 * @param TaskService $taskService
 	 * @return View
 	 */
-	public function create(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService, UserRepository $userRepository): View
+	public function create(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService): View
 	{
 		if (count($validationErrors)) {
 			return View::create($validationErrors, Response::HTTP_BAD_REQUEST);
 		}
 
-		$user_id = $request->get('oauth_user_id');
-		$taskDTO->user = $userRepository->find($user_id);
-		$return = $taskService->store($taskDTO);
-
-		return View::create(
-			[
-				"data" => $return ? ["message" => "Task created successfully"] : [],
-				"errors" => $return ? [] : ["message" => "Error while creating task"]
-			],
-			$return ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
-		);
+		return $taskService->store($taskDTO, $request->get('oauth_user_id'));
 	}
 
 	/**
