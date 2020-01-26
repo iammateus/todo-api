@@ -9,13 +9,13 @@ use App\Repository\TaskRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\TokenAuthenticatedController;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
-class TaskController extends FOSRestController implements TokenAuthenticatedController
+class TaskController extends AbstractFOSRestController implements TokenAuthenticatedController
 {
 	/**
 	 * Lists tasks.
