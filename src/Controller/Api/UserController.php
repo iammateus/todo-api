@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\User\User;
 use FOS\RestBundle\View\View;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -14,14 +15,15 @@ class UserController extends AbstractFOSRestController
 	/**
 	 * Get an user object.
 	 * @Rest\Post("/user")
+	 * @param Request $request
 	 * @param UserPasswordEncoderInterface $encoder
 	 * @return View
 	 */
-	public function store(UserPasswordEncoderInterface $encoder): View
+	public function store(Request $request, UserPasswordEncoderInterface $encoder): View
 	{
-		$user = new User("email", "email");
-		$encoded = $encoder->encodePassword($user, "12345");
-
+		/* $user = new User("email", "email");
+        
+        $encoded = $encoder->encodePassword($user, "12345");
 		$user->setPassword($encoded);
 
 		return View::create(
@@ -30,6 +32,6 @@ class UserController extends AbstractFOSRestController
 				"errors" => []
 			],
 			Response::HTTP_OK
-		);
+		); */
 	}
 }

@@ -10,8 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 class Client
 {
 	/**
-	 * @ORM\Id()
-	 * @ORM\Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	private $id;
 
@@ -39,9 +41,9 @@ class Client
 	 * Client constructor.
 	 * @param string $id
 	 */
-	private function __construct(string $id)
+	private function __construct(string $name)
 	{
-		$this->id = $id;
+		$this->name = $name;
 	}
 
 	/**
