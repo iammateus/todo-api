@@ -49,7 +49,7 @@ class UserController extends AbstractFOSRestController
 
         $user = new User($request->get("email"), $request->get("name"));
         
-        $encoded = $encoder->encodePassword($user, "12345");
+        $encoded = $encoder->encodePassword($user, $request->get("password"));
         $user->setPassword($encoded);
 
         $userRepository->store($user);
