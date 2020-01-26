@@ -7,4 +7,5 @@ chown www-data:www-data private.key public.key
 echo -e "OAUTH2_ENCRYPTION_KEY='$(php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;')'" >> .env
 composer install
 php bin/console doctrine:migrations:migrate --no-interaction
+php bin/console doctrine:fixtures:load --no-interaction
 apache2-foreground
