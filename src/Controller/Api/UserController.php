@@ -17,7 +17,7 @@ class UserController extends AbstractFOSRestController
 	 * @param UserPasswordEncoderInterface $encoder
 	 * @return View
 	 */
-	public function getAnUserObject(UserPasswordEncoderInterface $encoder): View
+	public function store(UserPasswordEncoderInterface $encoder): View
 	{
 		$user = new User("email", "email");
 		$encoded = $encoder->encodePassword($user, "12345");
