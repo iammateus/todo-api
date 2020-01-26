@@ -59,6 +59,8 @@ class User implements UserInterface, ArrayExpressibleEntityInterface
 		//@TODO: Make this contructor private and create a new method called "create" to instanciate a new User
 		$this->email = $email;
 		$this->name = $name;
+		$this->roles = [];
+		$this->active = true;
 	}
 
 	/**
