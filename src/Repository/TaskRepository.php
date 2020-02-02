@@ -48,9 +48,10 @@ final class TaskRepository implements TaskRepositoryInterface
 	/**
      * @param int|null $limit
      * @param int|null $offset
+     * @param int|null $userId
      * @return array
      */
-	public function findAll(int $limit = null,int $offset = null): array
+	public function findAll(int $limit = null,int $offset = null, int $userId = null): array
 	{
 		if($limit === null || $offset === null){
 			return $this->objectRepository->findAll();
@@ -58,11 +59,16 @@ final class TaskRepository implements TaskRepositoryInterface
 
 		$query = $this->queryBuilder
 					  ->select("t")
-					  ->from("App\Entity\Task\Task", "t")
-					  ->setFirstResult($offset)
-					  ->setMaxResults($limit)
-					  ->orderBy("t.id", "desc")
-					  ->getQuery();
+                      ->from("App\Entity\Task\Task", "t");
+
+        if ( !is_null($userId) ){
+            $query->where("t.user = $userId");
+        }
+                      
+        $query = $query->setFirstResult($offset)
+                       ->setMaxResults($limit)
+                       ->orderBy("t.id", "DESC")
+                       ->getQuery();
 
 		return $query->getResult();
 

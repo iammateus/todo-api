@@ -22,19 +22,21 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
     /**
      * Lists tasks.
      * 
-	 * @Rest\Get("/tasks")
+	 * @Rest\Get("/task")
      * @param Request $request
      * @param TaskRepository $taskRepository
      * @return View
      */
 	public function index(Request $request, TaskRepository $taskRepository): View
 	{
-		$id = $request->get('oauth_user_id');
+        $userId = $request->get('oauth_user_id');
 
-		$limit = empty((int) $request->get("limit")) ? 20 : (int) $request->get("limit");
-		$offset = (int) $request->get("offset");
+        $requestParams = json_decode($request->getContent());
 
-		$tasks = $taskRepository->findAll($limit, $offset);
+		$limit = empty((int)$requestParams->limit) ? 20 : (int) $requestParams->limit;
+		$offset = (int) $requestParams->offset;
+
+		$tasks = $taskRepository->findAll($limit, $offset, $userId);
 
 		$toArrayTasks = [];
 

@@ -130,7 +130,8 @@ class Task implements ArrayExpressibleEntityInterface
 		// Controls the array format of object
 
 		$array = [
-			"id" => $this->id,
+            "id" => $this->id,
+            "user_id" => $this->user->getId(),
 			"title" => $this->title,
 			"description" => $this->description,
 			"created_at" => $this->created_at,
