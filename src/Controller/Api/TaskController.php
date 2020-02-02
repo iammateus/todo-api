@@ -73,7 +73,7 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
     /**
      * Creates a task.
      * 
-	 * @Rest\Post("/tasks")
+	 * @Rest\Post("/task")
 	 * @ParamConverter("taskDTO", converter="fos_rest.request_body")
      * @param Request $request
      * @param TaskDTO $taskDTO
@@ -83,11 +83,20 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
      */
 	public function create(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService): View
 	{
-		if (count($validationErrors)) {
+		if ( count($validationErrors) ) {
 			return View::create($validationErrors, Response::HTTP_BAD_REQUEST);
 		}
 
-		return $taskService->store($taskDTO, $request->get('oauth_user_id'));
+        try 
+        {
+            $task = $taskService->store($taskDTO, $request->get('oauth_user_id'));
+            return View::create(["data" => ["message" => "Task created", "taskId" => $task->getId()]], Response::HTTP_OK);
+        }
+        catch (\Exception $e)
+        {
+			$this->logger->error($e);
+			return View::create(["data" => ["message" => "Failed to create a task"]], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 	}
 
     /**

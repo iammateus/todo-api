@@ -42,26 +42,24 @@ final class TaskService
 	}
 
 	/**
-	 * @param TaskDTO $taskDTO
-	 * @param int $userId
-	 * @return View
-	 */
-	public function store(TaskDTO $taskDTO, int $userId): View
+     * @param TaskDTO $taskDTO
+     * @param integer $userId
+     * @return View
+     */
+	public function store(TaskDTO $taskDTO, int $userId): Task
 	{
-		$task = new Task();
+        $task = new Task();
+        
+        $user = $this->userRepository->find($userId);
 
-		$task->setTitle($taskDTO->title);
-		$task->setUser($this->userRepository->find($userId));
+        $task->setTitle($taskDTO->title);
+		$task->setUser($user);
 		$task->setDescription($taskDTO->description);
-		$task->setCreatedAt(new DateTime());
+        $task->setCreatedAt(new DateTime());
 
-		try {
-			$this->taskRepository->store($task);
-			return View::create(["data" => ["message" => "Task created", "taskId" => $task->getId()]], Response::HTTP_OK);
-		} catch (\Exception $e) {
-			$this->logger->error($e);
-			return View::create(["data" => ["message" => "Failed to create a task"]], Response::HTTP_INTERNAL_SERVER_ERRORT);
-		}
+        $this->taskRepository->store($task);
+        
+        return $task;
 	}
 
 	/**
