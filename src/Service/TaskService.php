@@ -3,14 +3,11 @@
 namespace App\Service;
 
 use DateTime;
-use Exception;
 use App\Entity\Task\Task;
 use App\Entity\Task\TaskDTO;
 use Psr\Log\LoggerInterface;
-use FOS\RestBundle\View\View;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class TaskService
@@ -26,21 +23,15 @@ final class TaskService
 	private $userRepository;
 
 	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
-	/**
 	 * @param TaskRepository $taskRepository
 	 * @param UserRepository $userRepository
 	 * @param LoggerInterface $logger
 	 * @return void
 	 */
-	public function __construct(TaskRepository $taskRepository, UserRepository $userRepository, LoggerInterface $logger)
+	public function __construct(TaskRepository $taskRepository, UserRepository $userRepository)
 	{
 		$this->taskRepository = $taskRepository;
 		$this->userRepository = $userRepository;
-		$this->logger = $logger;
 	}
 
 	/**
