@@ -108,11 +108,10 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
      * @param Request $request
      * @param TaskDTO $taskDTO
      * @param ConstraintViolationListInterface $validationErrors
-     * @param TaskRepository $taskRepository
      * @param TaskService $taskService
      * @return View
      */
-	public function update(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskRepository $taskRepository, TaskService $taskService): View
+	public function update(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService): View
 	{
 		if ( count($validationErrors) ) {
 			return View::create($validationErrors, Response::HTTP_BAD_REQUEST);
