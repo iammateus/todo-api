@@ -14,19 +14,19 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-
 class TaskController extends AbstractFOSRestController implements TokenAuthenticatedController
 {
-	/**
-	 * Lists tasks.
+
+    /**
+     * Lists tasks.
+     * 
 	 * @Rest\Get("/tasks")
-	 * @param Request $request
-	 * @param TaskRepository $taskRepository
-	 * @return View
-	 */
+     * @param Request $request
+     * @param TaskRepository $taskRepository
+     * @return View
+     */
 	public function index(Request $request, TaskRepository $taskRepository): View
 	{
-
 		$id = $request->get('oauth_user_id');
 
 		$limit = empty((int) $request->get("limit")) ? 20 : (int) $request->get("limit");
@@ -49,13 +49,14 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
 		);
 	}
 
-	/**
-	 * Shows a single task.
+    /**
+     * Shows a single task.
+     * 
 	 * @Rest\Get("/tasks/{id}")
-	 * @param int $id
-	 * @param TaskRepository $taskRepository
-	 * @return View
-	 */
+     * @param [type] $id
+     * @param TaskRepository $taskRepository
+     * @return View
+     */
 	public function show($id, TaskRepository $taskRepository): View
 	{
 		$task = $taskRepository->find($id);
@@ -69,16 +70,17 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
 		);
 	}
 
-	/**
-	 * Creates a task.
+    /**
+     * Creates a task.
+     * 
 	 * @Rest\Post("/tasks")
 	 * @ParamConverter("taskDTO", converter="fos_rest.request_body")
-	 * @param Request $request
-	 * @param TaskDTO $taskDTO
-	 * @param ConstraintViolationListInterface $validationErrors
-	 * @param TaskService $taskService
-	 * @return View
-	 */
+     * @param Request $request
+     * @param TaskDTO $taskDTO
+     * @param ConstraintViolationListInterface $validationErrors
+     * @param TaskService $taskService
+     * @return View
+     */
 	public function create(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskService $taskService): View
 	{
 		if (count($validationErrors)) {
@@ -88,17 +90,18 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
 		return $taskService->store($taskDTO, $request->get('oauth_user_id'));
 	}
 
-	/**
-	 * Updates a task.
+    /**
+     * Updates a task.
+     * 
 	 * @Rest\Put("/tasks/{id}")
 	 * @ParamConverter("taskDTO", converter="fos_rest.request_body")
-	 * @param int $id
-	 * @param TaskDTO $taskDTO
-	 * @param ConstraintViolationListInterface $validationErrors
-	 * @param TaskRepository $taskRepository
-	 * @param TaskService $taskService
-	 * @return View
-	 */
+     * @param [type] $id
+     * @param TaskDTO $taskDTO
+     * @param ConstraintViolationListInterface $validationErrors
+     * @param TaskRepository $taskRepository
+     * @param TaskService $taskService
+     * @return View
+     */
 	public function update($id, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskRepository $taskRepository, TaskService $taskService): View
 	{
 		if (count($validationErrors)) {
@@ -126,14 +129,16 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
 			],
 			$updateTaskReturn ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
 		);
-	}
-	/**
-	 * Deletes a task.
+    }
+    
+    /**
+     * Deletes a task.
+     * 
 	 * @Rest\Delete("/tasks/{id}")
-	 * @param int $id
-	 * @param TaskService $taskService
-	 * @return View
-	 */
+     * @param [type] $id
+     * @param TaskService $taskService
+     * @return View
+     */
 	public function delete($id, TaskService $taskService): View
 	{
 
@@ -146,5 +151,6 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
 			],
 			$deleteTaskReturn ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
 		);
-	}
+    }
+    
 }
