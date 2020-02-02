@@ -11,6 +11,7 @@ use FOS\RestBundle\View\View;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class TaskService
 {
@@ -74,11 +75,11 @@ final class TaskService
         $task = $this->taskRepository->find($taskId);
 
 		if ( is_null($task) ) {
-			throw new Exception("Task not found", 1);
+			throw new BadRequestHttpException("Task not found");
         }
 
         if ( $task->getUser()->getId() !== $userId ) {
-            throw new Exception("You can't update this task", 1);
+            throw new BadRequestHttpException("You can't update this task");
         }
 
 		$task->setTitle($taskDTO->title);
@@ -91,26 +92,21 @@ final class TaskService
 	}
 
 	/**
-	 * @param int $id
-	 * @param TaskDTO $taskDTO
-	 * @return bool
-	 */
-	public function delete($id): bool
+     * @param integer $taskId
+     * @param integer $userId
+     */
+	public function delete(int $taskId, int $userId)
 	{
+		$task = $this->taskRepository->find($taskId);
 
-		$task = $this->taskRepository->find($id);
+		if ( is_null($task) ) {
+			throw new BadRequestHttpException("Task not found");
+        }
 
-		if (empty($task)) {
-			return false;
-		}
+        if ( $task->getUser()->getId() !== $userId ) {
+            throw new BadRequestHttpException("You can't delete this task");
+        }
 
-		try {
-			$this->taskRepository->delete($task);
-
-			return true;
-		} catch (\Exception $e) {
-			$this->logger->error($e);
-			return false;
-		}
+        $this->taskRepository->delete($task);
 	}
 }

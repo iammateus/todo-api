@@ -14,6 +14,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class TaskController extends AbstractFOSRestController implements TokenAuthenticatedController
 {
@@ -125,6 +126,10 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
             $task = $taskService->update($taskId, $taskDTO, $userId);
             return View::create([ "message" => "Task updated successfully", "data" => [ "taskId" => $task->getId()] ], Response::HTTP_OK);
         }
+        catch (BadRequestHttpException $error)
+        {
+            return View::create([ "error" => $error->getMessage() ], Response::HTTP_BAD_REQUEST);
+        }
         catch (Exception $error)
         {
             return View::create([ "error" => $error->getMessage() ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -134,23 +139,30 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
     /**
      * Deletes a task.
      * 
-	 * @Rest\Delete("/tasks/{id}")
-     * @param [type] $id
+	 * @Rest\Delete("/task/{id}")
+     * @param Request  $request
      * @param TaskService $taskService
      * @return View
      */
-	public function delete($id, TaskService $taskService): View
+	public function delete(Request  $request, TaskService $taskService): View
 	{
+        $userId = $request->get('oauth_user_id');
+        $taskId = $request->get('id');
 
-		$deleteTaskReturn = $taskService->delete($id);
-
-		return View::create(
-			[
-				"data" => $deleteTaskReturn ? ["message" => "Task deleted successfully"] : [],
-				"errors" => $deleteTaskReturn ? [] : ["message" => "Error while deleting task"]
-			],
-			$deleteTaskReturn ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
-		);
+        try
+        {
+            $taskService->delete($taskId, $userId);
+            return View::create([ "message" => "Task deleted successfully" ], Response::HTTP_OK);
+        }
+        catch (BadRequestHttpException $error)
+        {
+            return View::create([ "error" => $error->getMessage() ], Response::HTTP_BAD_REQUEST);
+        }
+        catch (Exception $error)
+        {
+            return View::create([ "error" => $error->getMessage() ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+           
     }
     
 }
