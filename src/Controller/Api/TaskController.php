@@ -9,6 +9,7 @@ use App\Repository\TaskRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\TokenAuthenticatedController;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -90,54 +91,45 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
         try 
         {
             $task = $taskService->store($taskDTO, $request->get('oauth_user_id'));
-            return View::create(["data" => ["message" => "Task created", "taskId" => $task->getId()]], Response::HTTP_OK);
+            return View::create(["message" => "Task created", "data" => ["taskId" => $task->getId()]], Response::HTTP_OK);
         }
         catch (\Exception $e)
         {
 			$this->logger->error($e);
-			return View::create(["data" => ["message" => "Failed to create a task"]], Response::HTTP_INTERNAL_SERVER_ERROR);
+			return View::create(["error" => "Failed to create a task"], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 	}
 
     /**
      * Updates a task.
      * 
-	 * @Rest\Put("/tasks/{id}")
+	 * @Rest\Put("/task/{id}")
 	 * @ParamConverter("taskDTO", converter="fos_rest.request_body")
-     * @param [type] $id
+     * @param Request $request
      * @param TaskDTO $taskDTO
      * @param ConstraintViolationListInterface $validationErrors
      * @param TaskRepository $taskRepository
      * @param TaskService $taskService
      * @return View
      */
-	public function update($id, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskRepository $taskRepository, TaskService $taskService): View
+	public function update(Request $request, TaskDTO $taskDTO, ConstraintViolationListInterface $validationErrors, TaskRepository $taskRepository, TaskService $taskService): View
 	{
-		if (count($validationErrors)) {
+		if ( count($validationErrors) ) {
 			return View::create($validationErrors, Response::HTTP_BAD_REQUEST);
-		}
+        }
+        
+        $userId = $request->get('oauth_user_id');
+        $taskId = $request->get('id');
 
-		$task = $taskRepository->find($id);
-
-		if (empty($task)) {
-			return View::create(
-				[
-					"data" => [],
-					"errors" => ["message" => "Task not found"]
-				],
-				Response::HTTP_NOT_FOUND
-			);
-		}
-
-		$updateTaskReturn = $taskService->update($id, $taskDTO);
-
-		return View::create(
-			[
-				"data" => $updateTaskReturn ? ["message" => "Task updated successfully"] : [],
-				"errors" => $updateTaskReturn ? [] : ["message" => "Error while updating task"]
-			],
-			$updateTaskReturn ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
-		);
+        try
+        {
+            $task = $taskService->update($taskId, $taskDTO, $userId);
+            return View::create([ "message" => "Task updated successfully", "data" => [ "taskId" => $task->getId()] ], Response::HTTP_OK);
+        }
+        catch (Exception $error)
+        {
+            return View::create([ "error" => $error->getMessage() ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
     
     /**

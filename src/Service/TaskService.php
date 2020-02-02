@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use DateTime;
+use Exception;
 use App\Entity\Task\Task;
 use App\Entity\Task\TaskDTO;
 use Psr\Log\LoggerInterface;
@@ -44,7 +45,7 @@ final class TaskService
 	/**
      * @param TaskDTO $taskDTO
      * @param integer $userId
-     * @return View
+     * @return Task
      */
 	public function store(TaskDTO $taskDTO, int $userId): Task
 	{
@@ -63,26 +64,30 @@ final class TaskService
 	}
 
 	/**
-	 * @param int $id
-	 * @param TaskDTO $taskDTO
-	 * @return bool
-	 */
-	public function update($id, TaskDTO $taskDTO): bool
+     * @param integer $taskId
+     * @param TaskDTO $taskDTO
+     * @param integer $userId
+     * @return Task
+     */
+	public function update(int $taskId, TaskDTO $taskDTO, int $userId): Task
 	{
-		$task = $this->taskRepository->find($id);
+        $task = $this->taskRepository->find($taskId);
+
+		if ( is_null($task) ) {
+			throw new Exception("Task not found", 1);
+        }
+
+        if ( $task->getUser()->getId() !== $userId ) {
+            throw new Exception("You can't update this task", 1);
+        }
 
 		$task->setTitle($taskDTO->title);
 		$task->setDescription($taskDTO->description);
 		$task->setUpdatedAt(new DateTime());
 
-		try {
-			$this->taskRepository->update($task);
-
-			return true;
-		} catch (\Exception $e) {
-			$this->logger->error($e);
-			return false;
-		}
+        $this->taskRepository->update($task);
+        
+        return $task;
 	}
 
 	/**
