@@ -54,21 +54,28 @@ class TaskController extends AbstractFOSRestController implements TokenAuthentic
     /**
      * Shows a single task.
      * 
-	 * @Rest\Get("/tasks/{id}")
-     * @param [type] $id
+	 * @Rest\Get("/task/{id}")
+     * @param Request $request
      * @param TaskRepository $taskRepository
      * @return View
      */
-	public function show($id, TaskRepository $taskRepository): View
+	public function show(Request $request, TaskRepository $taskRepository): View
 	{
-		$task = $taskRepository->find($id);
+        $userId = intval($request->get('oauth_user_id'));
+        $taskId = $request->get('id');
+
+        $task = $taskRepository->find($taskId);
+
+        if( is_null($task) ){
+            return View::create([ "error" => "Task not found" ], Response::HTTP_BAD_REQUEST);
+        }
+
+        if($task->getUser()->getId() !== $userId){
+            return View::create([ "error" => "Yout can't see this task" ], Response::HTTP_BAD_REQUEST);
+        }
 
 		return View::create(
-			[
-				"data" => !empty($task) ? $task->toArray() : [],
-				"errors" => !empty($task) ? [] : ["message" => "Task not found"]
-			],
-			!empty($task) ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
+			[ "data" => [ "task" => $task->toArray() ] ], Response::HTTP_OK
 		);
 	}
 
