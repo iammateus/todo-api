@@ -9,3 +9,6 @@ This project has a CRUD of tasks and an OAuth2 implementation (password and refr
 ```
 $ docker-compose up
 ```
+
+## License
+[MIT](https://github.com/iammateus/todo-api/blob/master/LICENSE)
